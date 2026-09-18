@@ -12,6 +12,7 @@ This is a portfolio project using a mock payment provider. It does not connect t
 - Balanced debit/credit ledger entries committed with each transfer.
 - Signed mock-provider webhooks with replay protection and duplicate detection.
 - Reconciliation, settlement batches, and append-only audit records for Operations/Admin users.
+- Transactional outbox records for completed transfers, ready for asynchronous dispatch.
 - Redis wallet-read caching, rate limits, correlation IDs, JSON logs, and health checks.
 - EF Core migrations, automated tests, Docker Compose, and GitHub Actions.
 
@@ -142,11 +143,11 @@ GitHub Actions runs a locked restore, Release build, tests with coverage, and a 
 
 ## What belongs in Git
 
-Commit source code, migrations, `packages.lock.json`, the tool manifest, shared configuration templates, Docker/CI definitions, and documentation.
+Commit source code, migrations, the checked-in `artifacts/migrations.sql` script, `packages.lock.json`, the tool manifest, shared configuration templates, Docker/CI definitions, and documentation.
 
 The [`.gitignore`](.gitignore) excludes:
 
-- Build/package output: `bin/`, `obj/`, `artifacts/`, `publish/`, NuGet packages.
+- Build/package output: `bin/`, `obj/`, generated artifact output, `publish/`, NuGet packages. The checked-in `artifacts/migrations.sql` script is allowed.
 - Test results, coverage reports, logs, and crash dumps.
 - IDE state and operating-system files.
 - `.env` variants (except `.env.example`), local settings, secrets, certificates, and private keys.
@@ -167,4 +168,4 @@ Ignoring a local settings file does not make the application load it automatical
 
 ## Limitations and next steps
 
-This project is not a production payment service. Production extensions include a transactional outbox, real provider integrations, managed secrets and key rotation, durable data-protection keys, operational role provisioning, telemetry export, and load testing. Audit writes currently happen after successful operations; an outbox is needed to make business changes and audit delivery atomic.
+This project is not a production payment service. Production extensions include an outbox dispatcher with retries and dead-letter handling, real provider integrations, managed secrets and key rotation, durable data-protection keys, operational role provisioning, telemetry export, and load testing. Transfer completion events are persisted atomically; audit delivery still happens after successful operations until it is routed through the outbox.
