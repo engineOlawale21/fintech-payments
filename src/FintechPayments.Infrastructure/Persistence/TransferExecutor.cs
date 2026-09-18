@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
 using System.Text.Json;
 using FintechPayments.Domain.Payments;
+using FintechPayments.Domain.Auditing;
 using FintechPayments.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
 
@@ -119,6 +120,19 @@ internal sealed class TransferExecutor(
         context.Transfers.Add(transfer);
         context.LedgerTransactions.Add(ledgerTransaction);
         context.IdempotencyRecords.Add(idempotency);
+        context.OutboxMessages.Add(OutboxMessage.Create(
+            "transfer.completed",
+            JsonSerializer.Serialize(new
+            {
+                transferId = transfer.Id,
+                sourceWalletId = transfer.SourceWalletId,
+                destinationWalletId = transfer.DestinationWalletId,
+                amount = transfer.Amount,
+                currency = transfer.Currency,
+                reference = transfer.Reference,
+                occurredAt = transfer.UpdatedAt,
+            }),
+            timestamp));
 
         try
         {

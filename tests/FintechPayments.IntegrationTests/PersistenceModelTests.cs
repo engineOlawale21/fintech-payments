@@ -1,3 +1,4 @@
+using FintechPayments.Domain.Auditing;
 using FintechPayments.Domain.Wallets;
 using FintechPayments.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -28,5 +29,21 @@ public sealed class PersistenceModelTests
         Assert.Contains(wallet.GetIndexes(), index => index.IsUnique);
         Assert.Contains(wallet.GetCheckConstraints(), constraint =>
             constraint.Name == "ck_wallets_balance_non_negative");
+    }
+
+    [Fact]
+    public void OutboxMappingDefinesPendingMessageIndex()
+    {
+        DbContextOptions<PaymentsDbContext> options = new DbContextOptionsBuilder<PaymentsDbContext>()
+            .UseNpgsql("Host=unused;Database=unused")
+            .Options;
+
+        using PaymentsDbContext context = new(options);
+        IModel designTimeModel = context.GetService<IDesignTimeModel>().Model;
+        IEntityType outbox = designTimeModel.FindEntityType(typeof(OutboxMessage))
+            ?? throw new InvalidOperationException("Outbox mapping was not registered.");
+
+        Assert.Contains(outbox.GetIndexes(), index =>
+            index.GetDatabaseName() == "ix_outbox_messages_pending" && !index.IsUnique);
     }
 }

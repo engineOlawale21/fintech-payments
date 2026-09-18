@@ -1,6 +1,6 @@
 # Fintech Transaction API — delivery plan
 
-Current delivery status: the complete financial workflow, operational hardening, recruiter documentation, and deterministic smoke-demo automation are implemented. Local build and all 66 automated tests pass. The Docker image, complete migration chain, PostgreSQL/Redis readiness checks, and end-to-end smoke demo have been verified successfully.
+Current delivery status: the complete financial workflow, operational hardening, recruiter documentation, deterministic smoke-demo automation, and transactional transfer outbox persistence are implemented. Local build and all automated tests pass. The Docker image, complete migration chain, PostgreSQL/Redis readiness checks, and end-to-end smoke demo have been verified successfully.
 
 Planning documents:
 
