@@ -1,0 +1,80 @@
+# .NET build and package output
+**/bin/
+**/obj/
+artifacts/*
+!artifacts/migrations.sql
+publish/
+*.nupkg
+*.snupkg
+
+# Test and coverage output
+TestResults/
+coverage/
+coverage.*
+*.trx
+*.coverage
+*.coveragexml
+
+# IDE and editor state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+_ReSharper*/
+*.DotSettings.user
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+appsettings.*.local.json
+secrets.json
+*.pfx
+*.p12
+*.key
+*.pem
+
+# Local Docker overrides and runtime data
+compose.override.yaml
+compose.override.yml
+docker-compose.override.yaml
+docker-compose.override.yml
+.docker/
+postgres_data/
+redis_data/
+*.dump
+*.backup
+*.rdb
+*.aof
+*.db
+*.db-shm
+*.db-wal
+
+# Logs, diagnostics, and temporary files
+logs/
+*.log
+*.dmp
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Private working notes (public project documentation remains tracked)
+AGENTS.md
+CLAUDE.md
+NOTES.md
+TODO.md
+*.local.md
+.agents/
+.codex/

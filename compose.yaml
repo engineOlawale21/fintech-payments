@@ -1,0 +1,59 @@
+name: fintech-payments
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Database__ConnectionString: Host=postgres;Port=5432;Database=fintech_payments;Username=fintech;Password=${POSTGRES_PASSWORD:-development_only}
+      Redis__ConnectionString: redis:6379,abortConnect=false
+      Jwt__Issuer: FintechPayments.Api
+      Jwt__Audience: FintechPayments.Client
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-development-only-signing-key-change-me-2026}
+      Webhooks__MockProvider__Secret: ${WEBHOOK_SECRET:-development-webhook-secret-change-me}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: fintech_payments
+      POSTGRES_USER: fintech
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-development_only}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fintech -d fintech_payments"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
